@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spletna Stran</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Vnesi podatke</h1>
+    <form id="myForm">
+        <label for="ime">Ime:</label>
+        <input type="text" id="ime" name="ime" required><br><br>
+
+        <label for="priimek">Priimek:</label>
+        <input type="text" id="priimek" name="priimek" required><br><br>
+
+        <label for="cas">Čas igranja(min):</label>
+        <input type="number" id="cas" name="cas" required><br><br>
+
+        <button type="button" onclick="dodajPodatke()">Odgovori</button>
+    </form>
+
+    <h1>Podatki</h1>
+    <table id="podatki">
+        <tr>
+            <th>Ime</th>
+            <th>Priimek</th>
+            <th>Čas igranja</th>
+        </tr>
+    </table>
+
+    <script>
+        // Nalaganje podatkov iz localStorage
+        window.onload = function() {
+            obnoviTabelo();
+        };
+
+        function obnoviTabelo() {
+            var podatki = JSON.parse(localStorage.getItem('podatki')) || [];
+            var table = document.getElementById("podatki");
+
+            // Počisti tabelo
+            table.innerHTML = '<tr><th>Ime</th><th>Priimek</th><th>Čas igranja</th></tr>';
+
+            // Ponovno ustvari tabelo z novimi podatki
+            for (var i = 0; i < podatki.length; i++) {
+                var row = table.insertRow(1);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                cell1.innerText = podatki[i].ime;
+                cell2.innerText = podatki[i].priimek;
+                cell3.innerText = podatki[i].cas;
+            }
+        }
+
+        function dodajPodatke() {
+            var ime = document.getElementById("ime").value;
+            var priimek = document.getElementById("priimek").value;
+            var cas = parseInt(document.getElementById("cas").value);
+
+            var podatki = JSON.parse(localStorage.getItem('podatki')) || [];
+            var found = false;
+
+            for (var i = 0; i < podatki.length; i++) {
+                if (podatki[i].ime === ime && podatki[i].priimek === priimek) {
+                    podatki[i].cas += cas;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                podatki.push({ ime: ime, priimek: priimek, cas: cas });
+            }
+
+            // Shranjevanje podatkov v localStorage
+            localStorage.setItem('podatki', JSON.stringify(podatki));
+
+            // Osveži tabelo
+            obnoviTabelo();
+
+            // Ponastavi obrazec
+            document.getElementById("myForm").reset();
+        }
+    </script>
+
+</body>
+</html>
